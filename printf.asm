@@ -8,7 +8,7 @@ macro stdcall proc, [arg]
 
 segment readable executable
 start:
-        stdcall         printf, msg, lovestr, 3802, 100, '!', 127, -11
+        stdcall         printf, msg, lovestr, 3802, 100, '!', 127, -15
 
         mov     rax, 1
         xor     rbx, rbx
@@ -78,11 +78,8 @@ determineType:
         ja      defaultDet
 
         jmp     qword [determineTable + eax*8 - '%'*8]
+        
 char:
-        mov     ah, 'c'
-        cmp     ah, al
-        jne     procent
-
         mov     al, [r8]
         mov     [argStr], al
         
@@ -91,10 +88,6 @@ char:
         ret
 
 procent:
-        mov     ah, '%'
-        cmp     ah, al
-        jne     string
-
         mov     [argStr], '%'
         
         sub     r8, 8
@@ -103,10 +96,6 @@ procent:
         ret
 
 string:
-        mov     ah, 's'
-        cmp     ah, al
-        jne     hex
-
         mov     rdi, [r8]
         call    strlen
         
@@ -115,10 +104,6 @@ string:
         ret
 
 hex:
-        mov     ah, 'x'
-        cmp     ah, al
-        jne     bin
-
         mov     rbx, [r8]
         mov     rcx, 16
         call    itoa
@@ -126,20 +111,12 @@ hex:
         ret
 
 bin:  
-        mov     ah, 'b'
-        cmp     ah, al
-        jne     oct
-
         mov     rbx, [r8]
         mov     rcx, 2
         call    itoa
         
         ret
 oct:
-        mov     ah, 'o'
-        cmp     ah, al
-        jne     decimal
-
         mov     rbx, [r8]
         mov     rcx, 8
         call    itoa
