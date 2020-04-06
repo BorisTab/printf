@@ -74,9 +74,14 @@ printf:
 ;ax, rbx
 ;========================================================
 determineType:
+        cmp     al, 'x'
+        ja      defaultDet
+
+        jmp     qword [determineTable + eax*8 - '%'*8]
+char:
         mov     ah, 'c'
         cmp     ah, al
-        jne     @@procent
+        jne     procent
 
         mov     al, [r8]
         mov     [argStr], al
@@ -85,10 +90,10 @@ determineType:
         mov     r10, 1
         ret
 
-@@procent:
+procent:
         mov     ah, '%'
         cmp     ah, al
-        jne     @@string
+        jne     string
 
         mov     [argStr], '%'
         
@@ -97,10 +102,10 @@ determineType:
         mov     r10, 1
         ret
 
-@@string:
+string:
         mov     ah, 's'
         cmp     ah, al
-        jne     @@hex
+        jne     hex
 
         mov     rdi, [r8]
         call    strlen
@@ -109,10 +114,10 @@ determineType:
         mov     r10, rbx
         ret
 
-@@hex:
+hex:
         mov     ah, 'x'
         cmp     ah, al
-        jne     @@bin
+        jne     bin
 
         mov     rbx, [r8]
         mov     rcx, 16
@@ -120,20 +125,20 @@ determineType:
         
         ret
 
- @@bin:  
+bin:  
         mov     ah, 'b'
         cmp     ah, al
-        jne     @@oct
+        jne     oct
 
         mov     rbx, [r8]
         mov     rcx, 2
         call    itoa
         
         ret
-@@oct:
+oct:
         mov     ah, 'o'
         cmp     ah, al
-        jne     @@dec
+        jne     decimal
 
         mov     rbx, [r8]
         mov     rcx, 8
@@ -141,16 +146,22 @@ determineType:
         
         ret
 
-@@dec:
+decimal:
         mov     ah, 'd'
         cmp     ah, al
-        jne     @@dec
 
         mov     rbx, [r8]
         mov     rcx, 10
         call    itoa
         
         ret
+
+defaultDet:
+        xor r9, r9
+        xor r10, r10
+
+        ret
+
 ;========================================================
 ;Strchr func from C
 ;
@@ -318,13 +329,25 @@ itoa:
         xor     r10, r10
         ret
 
-        
 
 
 
 segment readable writeable
 argStr  db      256 dup(0)
 numbers db      "0123456789abcdef", 0
+determineTable:
+dq      procent
+dq      60 dup (defaultDet)
+dq      bin
+dq      char
+dq      decimal
+dq      10 dup (defaultDet)
+dq      oct
+dq      3 dup (defaultDet)
+dq      string
+dq      4 dup (defaultDet)
+dq      hex  
+
 
 msg     db      "I %s %x %d%%%c%b %d", 0
 lovestr db      "love", 0
