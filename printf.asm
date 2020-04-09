@@ -232,8 +232,7 @@ itoa:
 @@loopBin:
         mov     rax, rbx
         and     rax, r15
-        add     rax, numbers
-        mov     rax, [rax]
+        mov     al, [rax + numbers]
         push    rax
         shr     rbx, cl
         inc     r10
@@ -268,8 +267,7 @@ itoa:
 @@loop10:
         xor     rdx, rdx
         div     rcx
-        add     rdx, numbers
-        mov     rdx, [rdx]
+        mov     dl, [rdx + numbers]
         push    rdx
         inc     r10
 
