@@ -13,7 +13,7 @@ start:
         mov     rax, 1
         xor     rbx, rbx
         int     80h
-
+        
 ;========================================================
 ;printf
 ;Exit:
@@ -41,6 +41,10 @@ printf:
         mov     rbx, 1
         int     80h 
 
+        mov     ah, '%'
+        cmp     ah, [rsi - 1]
+        jne     @@out
+
         mov     al, [rsi]
         call    determineType
 
@@ -60,6 +64,8 @@ printf:
         xor     rax, rax
         mov     rsp, rbp
         pop     rbp
+
+@@out:
         ret
 
 ;========================================================
@@ -164,7 +170,7 @@ strchr:
         ret
 
 @@NotFound: 
-        mov     rsi, 0
+        sub     rsi, 1
         ret
 
 ;========================================================
@@ -324,5 +330,5 @@ dq      4 dup (defaultDet)
 dq      hex  
 
 
-msg     db      "I %s %x %d%%%c%b %d", 0
+msg     db      "I %s %x %d%%%c%b %d ", 0
 lovestr db      "love", 0
